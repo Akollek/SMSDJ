@@ -1,0 +1,5 @@
+*.pyc
+*__init__.py
+
+db.sqlite3
+music_utilities/api_keys.py
