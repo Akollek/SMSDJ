@@ -1,5 +1,6 @@
 *.pyc
 *__init__.py
+*.swp
 
 db.sqlite3
 music_utilities/api_keys.py

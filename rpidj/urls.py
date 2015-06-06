@@ -19,5 +19,6 @@ from dj.views import *
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^', song_list),
+    url(r'^$', index),
+    url(r'^request', request_song),
 ]
