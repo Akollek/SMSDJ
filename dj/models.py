@@ -3,7 +3,8 @@ from django.db import models
 class Request(models.Model):
     STATUS_CHOICES = (
         ( 'RE', 'REQUESTED'),
-        ( 'DL', 'DOWNLOADED'),
+        ( 'DL', 'DOWNLOADING'),
+        ( 'DD', 'DOWNLOADED'),
         ( 'PL', 'PLAYING'),
         ( 'PD', 'PLAYED')
     )    
@@ -16,4 +17,4 @@ class Request(models.Model):
 
 class Song(models.Model):
     title = models.CharField(max_length=200)
-    filepath = models.CharField(max_length=100)
+    filename = models.CharField(max_length=100)

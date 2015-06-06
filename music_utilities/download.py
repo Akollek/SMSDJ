@@ -9,6 +9,8 @@ class Downloader(object):
         self.title = title
         self.youtube_url = youtube_url
         self.request = request
+        self.request.status = 'DL'
+        self.request.save()
 
     def download(self):
         download_thread = Thread(target=self.download_daemon,args=())
@@ -20,5 +22,9 @@ class Downloader(object):
         self.filename = p.getbestaudio().download()
         song = Song.objects.create(title=self.title,filename=self.filename)
         self.request.song = song
-        self.request.status = 'DL'
- 
+        self.request.status = 'DD'
+        self.request.save() 
+
+
+
+
