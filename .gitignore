@@ -6,5 +6,6 @@
 *.mp3
 
 db.sqlite3
-music_utilities/api_keys.py
+api_keys.py
 dj/migrations*
+logs/*
