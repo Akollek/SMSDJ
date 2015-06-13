@@ -1,11 +1,16 @@
 <html>
 <head>
     {% load staticfiles %}
+    <link rel="shortcut icon" href="{% static 'dj/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'dj/img/favicon.ico' %}" type="image/x-icon">
+    <title>SMS DJ</title>
+
     <link rel="stylesheet" href="{% static 'dj/css/foundation.css' %}">
     <script src="{% static 'dj/js/foundation.js' %}"></script>
     <script src="{% static 'dj/js/modernizr.js' %}"></script>
     <script src="{% static 'dj/js/jquery-1.11.3.js' %}"></script>
-    <script src="{% static 'dj/js/socket.io.js' %}"></script>
+    <script src="{% static 'dj/js/main.js' %}"></script>
+    <script src="https://cdn.firebase.com/js/client/2.2.7/firebase.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Josefin+Sans' rel='stylesheet' type='text/css'>
     <style>
         body, h1, h2, h3, h4, h5, h6, a, p {
@@ -31,7 +36,7 @@
           <div class="panel">
             <img id="playing-artwork" src="http://placehold.it/300x240&text=Nothing+Playing!"/>
             <h5>Now Playing</h5>
-                <p>{{ playing }}</p> 
+                <p id="now-playing"></p> 
           </div>
         </div>
         
@@ -40,8 +45,9 @@
         <div class="large-8 columns">
      
         <h3>Queued</h3>        
-            <table>
-            </table>     
+            <ul id="queue">
+
+            </ul>
         </div>
       </div> 
        

@@ -3,3 +3,4 @@ pafy==0.3.74
 Django==1.8.2
 pexpect==2.4
 twilio==3.6.6
+python-firebase==1.2

@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.utils import timezone
 from dj.models import *
 from threading import Thread
+from firebase import firebase
 import time, logging, os, sys, atexit
 import pexpect, pafy
 import api_keys
@@ -19,6 +20,9 @@ formatter = logging.Formatter(FORMAT)
 handler.setFormatter(formatter)
 log.addHandler(handler)
 log.setLevel(logging.INFO)
+
+
+playing_fb = firebase.FirebaseApplication(api_keys.firebase_url, None)
 
 class Downloader(object):
 
@@ -60,11 +64,13 @@ class Player(object):
 
     def player_daemon(self):
         global log
+        firebase_id = playing_fb.post('playing/', self.request.title)['name']
         filename = self.request.song
         command = "omxplayer {}".format(filename) 
         self.child = pexpect.spawn(command)
         self.child.expect(pexpect.EOF,timeout=None)
         log.info('Done playing: {}'.format(self.request.title))
+        playing_fb.delete('playing/',firebase_id)
         self.request.status = 'PD'
         self.request.save()
         os.system("rm {}".format(filename))
@@ -82,7 +88,24 @@ def main():
                 player = Player(top_song)
                 player.play()
                 log.info("Playing song: {}".format(top_song.title))
-            if top_request and top_request.count()<=10: # don't download more than 10 songs in advance
+
+                # update the firebase queue
+                time.sleep(0.1) # make sure the song actually started playing
+                requests = list(Request.objects.filter(status__in=['RE','DL','DD']).order_by("requested"))
+
+                queue = map(lambda x: x.title, requests)
+                
+                fb = firebase.FirebaseApplication(api_keys.firebase_url,None)
+                q = fb.get('queue/',None)
+            
+                if q:
+                    for k in q.keys():
+                        fb.delete('queue/', k)
+    
+                fb.post('queue/',queue)
+
+             # don't download more than 10 songs in advance and don't download more than two at a time
+            if top_request and top_request.count()<=10 and Request.objects.filter(status='DL').count()<=2:
                 top_request = top_request[0]
                 dldr = Downloader(top_request)
                 dldr.download()
@@ -99,6 +122,8 @@ def cleanup():
     
     # turn off existing songs:
     os.system("ps aux | awk '/omxplayer/ {print $2;}' | xargs kill")    
+    for k in playing_fb.get('playing/',None).keys():
+        playing_fb.delete('playing',k)
 
 if __name__ == "__main__":
     atexit.register(cleanup)

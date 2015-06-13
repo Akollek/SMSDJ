@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import TwilioRestClient 
+from firebase import firebase
 from dj.models import *
 import api_keys
 import ssl
@@ -72,28 +73,42 @@ def request_song(request):
                 request_text = body
                 )
        
-            index = Request.objects.filter(status__in=['RE','DL','DD']).count() - 1 
+            requests = list(Request.objects.filter(status__in=['RE','DL','DD']).order_by("requested"))
+            index = len(requests) - 1 
             message = "{title} has been added to the queue. There {be} {index} song{s} in front of it.".format(
                 title=title,
                 index=index,
                 be = ['is','are'][index>1 or index == 0],
                 s  = ['','s'][index>1 or index == 0])
 
+            queue = map(lambda x: x.title, requests)
+            
+            fb = firebase.FirebaseApplication(api_keys.firebase_url,None)
+            q = fb.get('queue/',None)
+        
+            if q:
+                for k in q.keys():
+                    fb.delete('queue/', k)
+
+            fb.post('queue/',queue)
+
         else:  
             req = same_request[0]
-            index = list(Request.objects.filter(status__in=['RE','DL','DD']).order_by("requested")).index(req)
+            requests = list(Request.objects.filter(status__in=['RE','DL','DD']).order_by("requested"))
+            index = requests.index(req)
             message = "{title} is already in the queue. There {be} {index} song{s} in front of it.".format(
                 title=title,
                 index=index,
                 be = ['is','are'][index>1 or index == 0],
                 s  = ['','s'][index>1 or index == 0])
-       
+
+
     else:
         message = "No matches found for \"{body}\"".format(body=body)
         
     twilio_client.messages.create(
         to=requested_by, 
-        from_="+14387949893", 
+        from_=api_keys.twilio_number, 
         body=message,  
     ) 
 
