@@ -1,6 +1,53 @@
 <html>
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'dj/css/foundation.css' %}">
+    <script src="{% static 'dj/js/foundation.js' %}"></script>
+    <script src="{% static 'dj/js/modernizr.js' %}"></script>
+    <script src="{% static 'dj/js/jquery-1.11.3.js' %}"></script>
+    <script src="{% static 'dj/js/socket.io.js' %}"></script>
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans' rel='stylesheet' type='text/css'>
+    <style>
+        body, h1, h2, h3, h4, h5, h6, a, p {
+           font-family: 'Josefin Sans', sans-serif; 
+        }
+    </style>
+    
+</head>
 
 <body>
-    This is the list of songs...
+      <div class="row">
+        <div class="large-12 columns">
+          <div class="panel">
+            <h1>SMS DJ</h1>
+          </div>
+        </div>
+      </div>
+       
+      <div class="row">
+      
+         
+        <div class="large-4 columns ">
+          <div class="panel">
+            <img id="playing-artwork" src="http://placehold.it/300x240&text=Nothing+Playing!"/>
+            <h5>Now Playing</h5>
+                <p>{{ playing }}</p> 
+          </div>
+        </div>
+        
+         
+         
+        <div class="large-8 columns">
+     
+        <h3>Queued</h3>        
+            <table>
+            </table>     
+        </div>
+      </div> 
+       
+     
 </body>
+
+
+
 </html>

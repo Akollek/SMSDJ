@@ -6,15 +6,21 @@ class Request(models.Model):
         ( 'DL', 'DOWNLOADING'),
         ( 'DD', 'DOWNLOADED'),
         ( 'PL', 'PLAYING'),
-        ( 'PD', 'PLAYED')
+        ( 'PD', 'PLAYED'),
+        ( 'CN', 'CANCELLED')
     )    
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
     request_text = models.CharField(max_length=300)
-    requested_by = models.CharField(max_length=10)
+    youtube_id = models.CharField(max_length=20) 
+    title = models.CharField(max_length=200) 
+    requested_by = models.CharField(max_length=10,null=True)
     requested = models.DateTimeField(auto_now_add=True)
     played = models.DateTimeField(null=True)
-    song = models.ForeignKey('Song', null=True)
+    song = models.CharField(max_length=100,null=True)
 
-class Song(models.Model):
-    title = models.CharField(max_length=200)
-    filename = models.CharField(max_length=100)
+    def __unicode__(self):
+        if len(self.title)<15:
+            return self.title
+        else:
+            return self.title[:12]+"..."
+

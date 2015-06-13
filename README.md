@@ -11,3 +11,6 @@ Django site, queues song requests by SMS and provides an interface for managing 
 - Option to limit number of requests per number per night or time unit
 - Option to block numbers from making requests
 - Option to make requests from the site
+
+#### BUGS ####
+- if a song is requested to be played again, it cannot be downloaded since the file exists, but the player still tries to play it and hangs 
