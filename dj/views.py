@@ -28,7 +28,7 @@ def youtube_search(query):
           q=query,
           part='id,snippet',
           type='video',
-          maxResults=1
+          maxResults=Request.MAX_DL_ATTEMPTS,
         ).execute()
     except ssl.SSLError:
         # Sometimes this throws an SSL error.
@@ -39,7 +39,8 @@ def youtube_search(query):
         return youtube_search(query)  
  
     try:
-        youtube_id = search['items'][0]['id']['videoId']
+        items = len(search['items'])
+        youtube_id = ' '.join([search['items'][i]['id']['videoId'] for i in xrange(max(5,items))]) 
         title = search['items'][0]['snippet']['title']
     except IndexError:
         # means no results
@@ -63,11 +64,11 @@ def request_song(request):
     requested_by = request.POST['From']
 
     if youtube_id and title:
-        same_request = Request.objects.filter(status__in=['RE','DL','DD'], youtube_id = youtube_id)
+        same_request = Request.objects.filter(status__in=['RE','DL','DD'], youtube_ids__contains = youtube_id)
         if not same_request:
             req = Request.objects.create(
                 status = 'RE',
-                youtube_id = youtube_id,
+                youtube_ids = youtube_id,
                 title = title,
                 requested_by = requested_by,
                 request_text = body

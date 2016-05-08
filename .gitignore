@@ -7,5 +7,6 @@
 
 db.sqlite3
 api_keys.py
+npm-debug.log
 dj/migrations*
 logs/*
